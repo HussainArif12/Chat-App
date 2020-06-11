@@ -1,7 +1,7 @@
 var app = require("express")();
 var http = require("http").createServer(app);
 var io = require("socket.io")(http);
-const joinUser = require('./users');
+const {joinUser, removeUser, findUser} = require('./users');
 app.get("/", function (req, res) {
   res.sendFile(__dirname + "/index.html");
 });
@@ -23,7 +23,13 @@ io.on("connection", function (socket) {
     io.to(thisRoom).emit("chat message", {data:data,id : socket.id});
   });
   socket.on("disconnect", () => {
+    const user = removeUser(socket.id);
+    console.log(user);
+    if(user) {
+      console.log(user.username + ' has left');
+    }
     console.log("disconnected");
+
   });
 });
 
